@@ -1,3 +1,9 @@
+"""
+Created by Nicholas Bisset
+
+This code should strictly be used as a learning material
+and not as a cheat to get out of learning important programming fundamentals
+"""
 
 from base import typeof, round_up_to_nearest_power_of_two
 from typing import TypeVar, Generic
