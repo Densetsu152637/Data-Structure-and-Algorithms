@@ -1,5 +1,7 @@
 import multiprocessing as mp
 
+# TODO use sub-processes rather than using mp
+
 class ThreadPool:
     
     def __init__(self, workers: int = 1):
