@@ -9,6 +9,7 @@ from base import require_package
 
 require_package("bitarray")
 from bitarray import bitarray
+from heap import MinHeap
 import heapq
 
 def huffman_encode(freq: dict[str, int]) -> dict[str, bitarray]:
@@ -17,18 +18,19 @@ def huffman_encode(freq: dict[str, int]) -> dict[str, bitarray]:
     Returns a dictionary {char: bitarray}.
     """
     # Step 1: Initialize the heap with leaf nodes
-    heap = [(f, c, None, None) for c, f in freq.items()]
-    heapq.heapify(heap)
+    heap = MinHeap(
+        [(f, c, None, None) for c, f in freq.items()]
+    )
 
     # Step 2: Iterativey merge two lowest-frequency nodes
     while len(heap) > 1:
-        f1, c1, l1, r1 = heapq.heappop(heap)
-        f2, c2, l2, r2 = heapq.heappop(heap)
+        f1, c1, l1, r1 = heap.pop()
+        f2, c2, l2, r2 = heap.pop()
         merged = (f1 + f2, c1 + c2, (c1, l1, r1), (c2, l2, r2))
-        heapq.heappush(heap, merged)
+        heap.append(merged)
 
     # Step 3: Traverse the final tree to generate bitarrays
-    _, _, left, right = heap[0]
+    _, _, left, right = heap.peek()
     codes: dict[str, bitarray] = {}
 
     def traverse(node, prefix: bitarray):
