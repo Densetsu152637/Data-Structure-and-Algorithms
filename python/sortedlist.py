@@ -59,23 +59,14 @@ class SortedList(ArrayList[T]):
         # already sorted so no work needs to be done
         return self
     
-    def insert(self, item: T, index: int) -> int:
-        assert RuntimeError(f"cannot insert an item into a SortedList as it must remain sorted")
-        
-    def index_of(self, item: T) -> int:
-        """
-        returns the index of the item
-        if it does not exist returns -1
-        """
-        correct_index = self.closest_index_of(item)
-        return correct_index if self[correct_index] == item else -1
-    
     def closest_index_of(self, item: T) -> int:
         """
         returns the closest index of where the item would live inside this list
         used for finding the correct insertion index
         """
         return binary_search_insert_index(self, item, len(self))
+    
+    # methods which polymorphically mirror python's inbuilt list methods
     
     def append(self, item: T) -> int:
         """
@@ -84,6 +75,17 @@ class SortedList(ArrayList[T]):
         """
         correct_index = self.closest_index_of(item)
         return self._shuffle_and_insert(item, correct_index)
+    
+    def index(self, item: T) -> int:
+        """
+        returns the index of the item
+        if it does not exist returns -1
+        """
+        correct_index = self.closest_index_of(item)
+        return correct_index if self[correct_index] == item else -1
+    
+    def insert(self, item: T, index: int) -> int:
+        assert RuntimeError(f"cannot insert an item into a SortedList as it must remain sorted")
     
     
         

@@ -1,5 +1,5 @@
 
-from heapq import heapify
+from arraylist import ArrayList
 from sorting import swap
 from typing import TypeVar, Generic
 
@@ -8,24 +8,24 @@ T = TypeVar("T")
 class MinHeap(Generic[T]):
     
     def __init__(self, values: list[T] | None = None):
-        self.__arr = []
+        self.array: ArrayList[T] = ArrayList()
         self.heapify(values)
 
     def __len__(self) -> int:
-        return len(self.__arr)
+        return len(self.array)
             
     def insert(self, elem: T) -> None:
         """
         inserts an element into the heap
         """
         # appends the element to the bottom of the heap
-        self.__arr.append(elem)
+        self.array.append(elem)
         # sifts the elemen up the heap
         index = len(self) - 1
         parent = (index - 1) // 2
         
-        while index > 0 and self.__arr[parent] > self.__arr[index]:
-            swap(self.__arr, index, parent)
+        while index > 0 and self.array[parent] > self.array[index]:
+            swap(self.array, index, parent)
             # Move up the tree to the
             # parent of the current element
             index = (index - 1) // 2
@@ -36,7 +36,7 @@ class MinHeap(Generic[T]):
         """
         looks at the minimum element in the heap
         """
-        return self.__arr[0]
+        return self.array[0]
     
     def extract_min(self) -> T:
         """
@@ -44,8 +44,8 @@ class MinHeap(Generic[T]):
         """
         elem = self.min()
         # swaps the max item with the min item
-        swap(self.__arr, 0, -1)
-        self.__arr.pop()
+        swap(self.array, 0, -1)
+        self.array.pop()
         
         # Heapify the tree starting from the element at the
         # deleted index
@@ -60,7 +60,7 @@ class MinHeap(Generic[T]):
         if new_elems == None: return # no work to do
         
         # valid items to add to the heap TODO
-        #self.__arr.extend(new_elems)
+        #self.array.extend(new_elems)
         #self._heapify(0)
         
     def _heapify(self, index: int) -> None:
@@ -73,14 +73,14 @@ class MinHeap(Generic[T]):
             right_child = 2 * index + 2
             smallest = index
 
-            if left_child < len(self) and self.__arr[left_child] < self.__arr[smallest]:
+            if left_child < len(self) and self.array[left_child] < self.array[smallest]:
                 smallest = left_child
                 
-            if right_child < len(self) and self.__arr[right_child] < self.__arr[smallest]:
+            if right_child < len(self) and self.array[right_child] < self.array[smallest]:
                 smallest = right_child
 
             if smallest != index:
-                swap(self.__arr, index, smallest)
+                swap(self.array, index, smallest)
                 index = smallest
                 
             else:

@@ -5,7 +5,6 @@ This code should strictly be used as a learning material
 and not as a cheat to get out of learning important programming fundamentals
 """
 
-from arraylist import ArrayListIterator
 from typing import TypeVar, Generic
 
 T = TypeVar("T")
@@ -29,7 +28,8 @@ class Stack(Generic[T]):
         return self.__str__()
     
     def __iter__(self):
-        return ArrayListIterator(self.__array, self.length)
+        for i in range(len(self)):
+            yield self.__array[i]
     
     def __len__(self):
         return self.length
@@ -86,7 +86,9 @@ class Queue(Generic[T]):
         return self.__str__()
     
     def __iter__(self):
-        return QueueIterator(self, self.length)
+        for i in range(len(self)):
+            index = self.start + i % len(self)
+            yield self.__array[index]
     
     def __len__(self):
         return self.length
@@ -122,21 +124,4 @@ class Queue(Generic[T]):
         insert_index = (self.start + self.length) & self.cap
         self.__array[insert_index] = item
         self.length += 1
-
-    
-class QueueIterator(Generic[T]):
-    
-    def __init__(self, queue: Queue[T], length: int):
-        self.__queue = queue
-        self.index = 0
-        self.stop = length
-        
-    def __next__(self) -> T:
-        if self.index > self.stop: raise StopIteration
-        ret = self.__queue.serve()
-        self.index += 1
-        self.__queue.append(ret)
-        return ret
-        
-        
 
