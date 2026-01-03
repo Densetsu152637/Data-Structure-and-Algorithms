@@ -60,6 +60,8 @@ def elias_decode(code: bitarray) -> int:
             
 if __name__ == "__main__":
     n = 561
+    print("Original:", n)
+    
     encoded = elias_encode(n)
     print("Encoded:", encoded.to01())
 
