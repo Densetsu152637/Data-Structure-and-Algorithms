@@ -12,7 +12,12 @@ T = TypeVar("T")
 
 class ArrayList(Generic[T]):
     
-    def __init__(self, cap: int = 16, resizeable: bool = True, clip_to_power_of_two: bool = True, initial_elems: list[T] | None = None):
+    def __init__(self, 
+            cap: int = 16, 
+            resizeable: bool = True, 
+            clip_to_power_of_two: bool = True, 
+            initial_elems: list[T] | None = None
+        ):
         #
         cap = max(cap, len(initial_elems))
         #
