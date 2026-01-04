@@ -15,9 +15,9 @@ class TrieNode(Generic[T]):
     def __init__(self, entry: T | None = None):
         # our entry for this node
         self.entry: T | None = entry
-        # should have a unique hash for each character
+        # should have a unique hash for each character (no character clustering)
         self.children: HashMap[str, TrieNode[T]] = HashMap(
-            collision_resolution = CollisionResolution.NO_CLUSTERING
+            cluster_limit=0
         )
         
     def _iter(self, word: str):

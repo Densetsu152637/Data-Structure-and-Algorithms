@@ -36,18 +36,16 @@ class Pair(Generic[K, V]):
         
 class CollisionResolution(Enum):
     
-    NO_CLUSTERING = 0
-    ARRAY = 1
-    SORTED_ARRAY = 2
+    ARRAY = 0
+    SORTED_ARRAY = 1
     
 COLLISION_FN_LIST = {
-    CollisionResolution.NO_CLUSTERING: lambda x: [x],
-    CollisionResolution.NO_CLUSTERING: lambda x: ArrayList(initial_elems=[x]),
-    CollisionResolution.NO_CLUSTERING: lambda x: SortedList(initial_elems=[x])
+    CollisionResolution.ARRAY:        lambda x: ArrayList(initial_elems=[x]),
+    CollisionResolution.SORTED_ARRAY: lambda x: SortedList(initial_elems=[x])
 }
 
 PairType = Pair[K, V]
-ClusterType = list[PairType] | ArrayList[PairType] | SortedList[PairType]
+ClusterType = ArrayList[PairType] 
 
 class HashMap(Generic[K, V]):
     
@@ -60,12 +58,14 @@ class HashMap(Generic[K, V]):
     def __init__(self, 
             initial_cap: int = 21, 
             growth_rate: float = 1.618, 
-            collision_resolution: CollisionResolution = CollisionResolution.ARRAY
+            collision_resolution: CollisionResolution = CollisionResolution.ARRAY,
+            cluster_limit: float = 0.05 # default 5% of entries can be clustered on a single entry
         ):
         
         self.clusters: ArrayList[list[PairType]] = ArrayList(initial_cap)
         self.growth_rate = growth_rate
-        self.elems = 0
+        self.elems: int = 0
+        self.cluster_limit: float = float(min(0, cluster_limit))
         
         self.collision_resolution = collision_resolution
         
@@ -113,11 +113,6 @@ class HashMap(Generic[K, V]):
         """
         inserts a pair into the hashmap
         """
-        # if the number of elements is greater than the 
-        # allocated space (without collisions) then we want to resize it
-        if self.elems >= self.clusters.cap:
-            self._resize()
-            
         # search for the cluster index first        
         index = self._hash(pair.key)
         cluster: list[PairType] | None = self.clusters[index]
@@ -127,38 +122,30 @@ class HashMap(Generic[K, V]):
             new_cluster = COLLISION_FN_LIST[self.collision_resolution](pair)
             self.clusters[index] = new_cluster
             return True
+        
+        # if we have reached our cluster limit we want to resize
+        # until we have reduced the size of our cluster
+        # to an acceptble limit
+        # has to have a minimum of one entry
+        cluster_max_size = max(1, int(self.elems * self.cluster_limit)) 
+        while len(cluster) >= cluster_max_size:
+            self._resize()
+            index = self._hash(pair.key)
+            cluster: list[PairType] | None = self.clusters[index]
             
         # we found a cluster
         cluster_index, entry = self._get_entry_from_cluster(pair, cluster)
         
-        # if our entry is null we just append it to our existing cluster
-        if entry == None:
-            cluster.append(entry)
-            return True
-        
         # if the key already exists within the cluster
         # we just override the value
-        if entry.key == pair.key:
+        if entry != None and entry.key == pair.key:
             entry.value = pair.value
             return False
         
-        self.elems += 1
-        
-        # if we have a new key and we do not want clustering we resize until we get a vacant spot
-        # so that we can insert without clustering at all
-        if self.collision_resolution == CollisionResolution.NO_CLUSTERING and cluster != None:            
-            while cluster != None:
-                self._resize()
-                index = self._hash(pair.key)
-                cluster: list[PairType] | None = self.clusters[index]
-                
-            # at this point our cluster should be none
-            new_cluster = COLLISION_FN_LIST[self.collision_resolution](pair)
-            self.clusters[index] = new_cluster
-            return True
-        
-        # we know we are safe to just append the entry to the cluster polymorphicly
+        # we know the key does not exist within the cluster so we append it
+        # polymorphically to the collision data structure
         cluster.append(entry)
+        self.elems += 1
         return True
     
     def insert(self, key: K, value: V) -> bool:
