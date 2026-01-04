@@ -1,10 +1,14 @@
+"""
+Created by Nicholas Bisset
+
+This code should strictly be used as a learning material
+and not as a cheat to get out of learning important programming fundamentals
+"""
 
 import numpy as np
 
 FP_TYPE  = np.float32
 INT_TYPE = np.int32
-
-from typing import TypeVar, Generic, Iterator
 
 class VectorN:
     
@@ -28,7 +32,7 @@ class VectorN:
         if dim != None: self.redimension(dim)
         
     def __str__(self) -> str:
-        return f"KDPoint(dim={self.coords.size})"
+        return f"VectorN(dim={self.coords.size})"
     
     def __repr__(self):
         return self.__str__()
@@ -49,11 +53,10 @@ class VectorN:
     def redimension(self, dim: int):
         self.coords.resize(dim)
         
-        
-
-class hBTree:
+class HBTree:
     """
-    Holey Brick Tree
+    Holey Brick Tree (hB-Tree)
+    a variation on the K-D-B tree 
     a tree that is able to self balance using multiattribute indexing methods
     """
     
