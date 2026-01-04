@@ -11,7 +11,19 @@ from typing import TypeVar
 
 T = TypeVar("T")
 
-def binary_search_insert_index(arr: list[T], target: T, high: int = None) -> int:
+def binary_search_insert_index(
+        arr: list[T], 
+        target: T, 
+        high: int = None, 
+        comparator = lambda x1, x2: x1 < x2
+    ) -> int:
+    """
+    performs a binary search on the array 
+    assumes that the array is already sorted
+    
+    provides an option to use a custom comparator function
+    else just assumes the items are dynamically comparable
+    """
     low = 0
     high = high if high != None else len(arr)
     
@@ -20,7 +32,7 @@ def binary_search_insert_index(arr: list[T], target: T, high: int = None) -> int
         # if we get a hit early return
         if arr[mid] == target: return mid
         # if our guess is too low
-        elif arr[mid] < target: low = mid + 1
+        elif comparator(arr[mid], target): low = mid + 1
         # if our guess is too high
         else: high = mid
             
@@ -28,8 +40,14 @@ def binary_search_insert_index(arr: list[T], target: T, high: int = None) -> int
 
 class SortedList(ArrayList[T]):
     
-    def __init__(self, cap: int = 16, resizeable: bool = False, initial_elems: list[T] | None = None):
+    def __init__(self, 
+            cap: int = 16, 
+            resizeable: bool = False, 
+            initial_elems: list[T] | None = None, 
+            comparator = lambda x1, x2: x1 < x2
+        ):
         super.__init__(self, cap, resizeable, initial_elems)
+        self.comparator = comparator
     
     def __eq__(self, other) -> bool:
         return isinstance(other, SortedList) and super().__eq__(self, other)
@@ -64,7 +82,7 @@ class SortedList(ArrayList[T]):
         returns the closest index of where the item would live inside this list
         used for finding the correct insertion index
         """
-        return binary_search_insert_index(self, item, len(self))
+        return binary_search_insert_index(self, item, len(self), self.comparator)
     
     # methods which polymorphically mirror python's inbuilt list methods
     

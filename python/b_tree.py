@@ -173,7 +173,7 @@ class BTree(Generic[T]):
                 # case 1a: trivial leaf node deletion (just remove the item) 
                 if len(node.items) >= self.lower_bound:
                     # shuffle all items down by one position to found index, overriding it in the process
-                    node.items.delete_index(index) 
+                    node.items.pop(index) 
                     
             # case 2: internal node and contains more than t - 1 items
             elif not self._is_leaf(node) and len(node.items) > self.lower_bound:
@@ -182,14 +182,12 @@ class BTree(Generic[T]):
                 # case 2a: replace with predecessor item
                 if len(predecessor.items) >= self.lower_bound + 1:
                     predecessor_index = len(predecessor.items) - 1
-                    node.items[index] = predecessor.items[predecessor_index], 
-                    predecessor.items.delete_index(predecessor_index)
+                    node.items[index] = predecessor.items.pop(predecessor_index)
                     
                 # case 2b: replace with successor item
                 elif len(successor.items) > self.lower_bound + 1:
                     successor_index = 0
-                    node.items[index] = successor.items[successor_index], 
-                    successor.items.delete_index(successor_index)
+                    node.items[index] = successor.items.pop(successor_index)
                     
                 # case 2c: merge predecesor and successor nodes together, deleting item after demoting it
                 else:
@@ -215,10 +213,8 @@ class BTree(Generic[T]):
             if left_sib != None and len(left_sib.items) > self.lower_bound:
                 # right rotation
                 # get items from right_sib 
-                left_sib_hit = left_sib.items[-1]
-                left_sib_child = left_sib.children[-1]
-                left_sib.items.delete_index(-1)
-                left_sib.children.delete_index(-1)
+                left_sib_hit = left_sib.items.pop(-1)
+                left_sib_child = left_sib.children.pop(-1)
                 # reassign node hit value
                 node.items[index] = left_sib_hit
                 # put items inside found child
@@ -229,10 +225,8 @@ class BTree(Generic[T]):
             elif right_sib != None and len(right_sib.items) > self.lower_bound:
                 # left rotation
                 # get items from right_sib 
-                right_sib_hit = right_sib.items[0]
-                right_sib_child = right_sib.children[0]
-                right_sib.items.delete_index(0)
-                right_sib.children.delete_index(0)
+                right_sib_hit = right_sib.items.pop(0)
+                right_sib_child = right_sib.children.pop(0)
                 # reassign node hit value
                 node.items[index] = right_sib_hit
                 # put items inside found child
@@ -279,11 +273,11 @@ class BTree(Generic[T]):
             ]
         )
         # delete item from the parent items list
-        parent.items.delete_index(index)
+        parent.items.pop(index)
         
         # delete right child and override left child node to merged node
         parent.children[index] = node
-        parent.children.delete_index(index + 1)
+        parent.children.pop(index + 1)
         
         # if our parent node is empty now we know this is self.head
         if len(parent.items) == 0:
