@@ -47,6 +47,8 @@ class Stack(Generic[T]):
     def peek(self) -> T:
         return self.__array[self.length - 1]
     
+    # methods which polymorphically mirror python's inbuilt list methods
+    
     def pop(self) -> T:
         ret = self.peek()
         self.__array[self.length - 1] = None
@@ -107,7 +109,9 @@ class Queue(Generic[T]):
     def peek(self) -> T:
         return self.__array[self.start]
     
-    def serve(self) -> T:
+    # methods which polymorphically mirror python's inbuilt list methods
+    
+    def pop(self) -> T:
         ret = self.peek()
         self.__array[self.start] = None
         self.start = (self.start + 1) % self.cap
