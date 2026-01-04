@@ -5,7 +5,7 @@ This code should strictly be used as a learning material
 and not as a cheat to get out of learning important programming fundamentals
 """
 
-from typing import TypeVar, Generic, Iterable
+from typing import TypeVar, Generic, Iterator
 from hashmap import HashMap, CollisionResolution
 
 T = TypeVar("T")
@@ -19,6 +19,19 @@ class TrieNode(Generic[T]):
         self.children: HashMap[str, TrieNode[T]] = HashMap(
             collision_resolution = CollisionResolution.NO_CLUSTERING
         )
+        
+    def _iter(self, word: str):
+        if self.entry:
+            yield (word, self.entry)
+            
+        for p in self.children:
+            letter, child = p.key, p.value
+            for e in child._iter(word + letter):
+                yield e
+                
+            
+    def __iter__(self) -> Iterator[str, T]:
+        return self._iter("")
 
 class Trie(Generic[T]):
     
@@ -27,7 +40,22 @@ class Trie(Generic[T]):
         
         if initial_elems:
             self.insert(elem for elem in initial_elems)
-            
+    
+    def __repr__(self):
+        return self.__str__()
+    
+    def __iter__(self) -> Iterator[str, T]:
+        return self.head._iter("")
+    
+    def __eq__(self, other) -> bool:
+        return isinstance(other, Trie) and self.head == other.head
+    
+    def __getitem__(self, word: str) -> T:
+        return self.search(word)
+    
+    def __setattr__(self, word: str, value: T) -> None:
+        return self.insert(word, value)    
+    
     def _scaffold_down_rec(self, 
             word: str, 
             node: TrieNode[T], 

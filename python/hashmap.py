@@ -47,14 +47,13 @@ COLLISION_FN_LIST = {
 }
 
 PairType = Pair[K, V]
-ClusterType = tuple[PairType] | ArrayList[PairType] | SortedList[PairType]
+ClusterType = list[PairType] | ArrayList[PairType] | SortedList[PairType]
 
 class HashMap(Generic[K, V]):
     
     @classmethod
-    def pairs_from(cls, arr) -> Iterable[PairType]:
+    def pairs_from(cls, arr: ArrayList[list[Pair[K, V]]]) -> Iterable[Pair[K, V]]:
         for cluster in arr:
-            cluster: ClusterType
             for pair in cluster:
                 yield pair
     
@@ -64,7 +63,7 @@ class HashMap(Generic[K, V]):
             collision_resolution: CollisionResolution = CollisionResolution.ARRAY
         ):
         
-        self.clusters = ArrayList[ClusterType] = ArrayList(initial_cap)
+        self.clusters: ArrayList[list[PairType]] = ArrayList(initial_cap)
         self.growth_rate = growth_rate
         self.elems = 0
         
@@ -79,7 +78,7 @@ class HashMap(Generic[K, V]):
     def __len__(self) -> int:
         return self.elems 
     
-    def __iter__(self):
+    def __iter__(self) -> Iterable[Pair[K, V]]:
         return HashMap.pairs_from(self.clusters)
     
     def __getitem__(self, key: K) -> V | None:
