@@ -82,6 +82,12 @@ class HashMap(Generic[K, V]):
     def __iter__(self):
         return HashMap.pairs_from(self.clusters)
     
+    def __getitem__(self, key: K) -> V | None:
+        return self.search(key)
+    
+    def __setattr__(self, key: K, value: V) -> None:
+        return self.insert(key, value)
+    
     def _hash(self, elem: K) -> int:
         return hash(elem) % self.clusters.cap
     

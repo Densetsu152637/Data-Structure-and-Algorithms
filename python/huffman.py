@@ -10,7 +10,6 @@ from base import require_package
 require_package("bitarray")
 from bitarray import bitarray
 from heap import MinHeap
-import heapq
 
 def huffman_encode(freq: dict[str, int]) -> dict[str, bitarray]:
     """
