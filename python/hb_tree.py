@@ -54,18 +54,26 @@ class VectorN:
         self.coords.resize(dim)
         
     def distance_from(self, other):
-        return distance_between(self, other)
+        return distance_between(self.coords, other.coords)
+    
+    def distance(self):
+        return distance_of(self.coords)
         
 import math
+
+def distance_of(v: np.ndarray) -> float:
+    """
+    computes the length of this vector 
+    in hyperdimesional space
+    """
+    return math.sqrt(v * v)
         
-def distance_between(v1: VectorN, v2: VectorN) -> float:
+def distance_between(v1: np.ndarray, v2: np.ndarray) -> float:
     """
     computes the distance between two points
     in hyperdimensional space
     """
-    diff = v1.coords - v2.coords
-    square = diff * diff
-    return math.sqrt(square.sum())
+    return distance_of(v1 - v2)
         
 class HBTree:
     """
