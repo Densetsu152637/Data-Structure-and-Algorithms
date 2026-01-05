@@ -6,7 +6,7 @@ and not as a cheat to get out of learning important programming fundamentals
 """
 
 from typing import TypeVar, Generic, Iterator
-from hashmap import HashMap, CollisionResolution
+from hashmap import HashMap
 
 T = TypeVar("T")
 
@@ -17,7 +17,7 @@ class TrieNode(Generic[T]):
         self.entry: T | None = entry
         # should have a unique hash for each character (no character clustering)
         self.children: HashMap[str, TrieNode[T]] = HashMap(
-            cluster_limit=0
+            cluster_limit = 0
         )
         
     def _iter(self, word: str):

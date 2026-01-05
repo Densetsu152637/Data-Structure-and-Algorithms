@@ -53,6 +53,20 @@ class VectorN:
     def redimension(self, dim: int):
         self.coords.resize(dim)
         
+    def distance_from(self, other):
+        return distance_between(self, other)
+        
+import math
+        
+def distance_between(v1: VectorN, v2: VectorN) -> float:
+    """
+    computes the distance between two points
+    in hyperdimensional space
+    """
+    diff = v1.coords - v2.coords
+    square = diff * diff
+    return math.sqrt(square.sum())
+        
 class HBTree:
     """
     Holey Brick Tree (hB-Tree)
@@ -68,7 +82,8 @@ class HBTree:
     
     def upsert(self, old: VectorN, new: VectorN):
         deletion = self.delete(old)
-        return self.insert(new)
+        insertion = self.insert(new)
+        return (deletion, insertion)
     
     def insert(self, point: VectorN):
         pass
