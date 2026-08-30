@@ -15,19 +15,113 @@ def swap(arr: list[T], i: int, j: int):
     arr[i], arr[j] = arr[j], arr[i]
 
 def bubble_sort(array: list[T]) -> list[T]:
+    n = len(array)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - i - 1):
+            if array[j] > array[j + 1]:
+                swap(array, j, j + 1)
+                swapped = True
+        # can terminate early as all elements will be in the correct ordering
+        if not swapped:
+            break
+    return array
+
+def selection_sort(array: list[T]) -> list[T]:
+    n = len(array)
     # iterate over every element in the array
-    for i in range(len(array)):
+    for i in range(n):
         min_i = i
         # find minimum remaining element in unsorted position
-        for j in range(i, len(array)):
+        for j in range(i, n):
             if array[j] < array[min_i]:
                 min_i = j
         # swap the next min element with i
         swap(array, i, min_i)
-    return array    
+    return array   
 
 def insertion_sort(array: list[T]) -> list[T]:
-    pass
+    for i in range(1, len(array)):
+        key = array[i]
+        j = i - 1
+        
+        # shift elements to the right
+        while j >= 0 and array[j] > key:
+            array[j + 1] = array[j]
+            j -= 1
+        
+        array[j + 1] = key
+    return array
+
+def cycle_sort(array: list[T]) -> list[T]:
+    n = len(array)
+    
+    for cycle_start in range(n - 1):
+        item = array[cycle_start]
+        
+        # find where to place the item
+        pos = cycle_start
+        for i in range(cycle_start + 1, n):
+            if array[i] < item:
+                pos += 1
+        
+        # already in correct position
+        if pos == cycle_start:
+            continue
+        
+        # handle duplicates
+        while item == array[pos]:
+            pos += 1
+        
+        # place the item
+        array[pos], item = item, array[pos]
+        
+        # rotate rest of the cycle
+        while pos != cycle_start:
+            pos = cycle_start
+            for i in range(cycle_start + 1, n):
+                if array[i] < item:
+                    pos += 1
+            
+            while item == array[pos]:
+                pos += 1
+            
+            array[pos], item = item, array[pos]
+    
+    return array
+
+def cocktail_sort(array: list[T]) -> list[T]:
+    n = len(array)
+    start = 0
+    end = n - 1
+    
+    while start < end:
+        swapped = False
+        
+        # forward pass
+        for i in range(start, end):
+            if array[i] > array[i + 1]:
+                swap(array, i, i + 1)
+                swapped = True
+        
+        if not swapped:
+            break
+        
+        end -= 1
+        swapped = False
+        
+        # backward pass
+        for i in range(end, start, -1):
+            if array[i] < array[i - 1]:
+                swap(array, i, i - 1)
+                swapped = True
+        
+        if not swapped:
+            break
+        
+        start += 1
+    
+    return array
 
 # O(nlogn)
 
@@ -69,46 +163,86 @@ def _quick_sort_rec(array: list[T], start: int, end: int):
     _quick_sort_rec(array, start_i, end)
 
 def merge_sort(array: list[T]) -> list[T]:
-    _merge_sort_rec(array, 0, len(array))
+    aux = [None] * len(array)  # pre-allocate once
+    _merge_sort_rec(array, aux, 0, len(array))
     return array
 
-def _merge_sort_rec(array: list[T], start: int, end: int) -> None:
-    # base case, length <= 1
-    if end - start < 1:
-        return 
+def _merge_sort_rec(array: list[T], aux: list[T], start: int, end: int) -> None:
+    # base case: length <= 1
+    if end - start <= 1:
+        return
     
-    # recursive inductive case
-    middle = (end + start) // 2
-    _merge_sort_rec(array, start, middle)
-    _merge_sort_rec(array, middle, end)
-    return _merge_arrays(array, start, middle, end)
+    middle = (start + end) // 2
+    
+    _merge_sort_rec(array, aux, start, middle)
+    _merge_sort_rec(array, aux, middle, end)
+    
+    _merge_arrays(array, aux, start, middle, end)
 
-def _merge_arrays(array: list[T], start: int, middle: int, end: int) -> list[T]:
-    # two pointers technique
-    aux = []
-    left_i  = int(start)
-    right_i = int(right_i)
+def _merge_arrays(array: list[T], aux: list[T], start: int, middle: int, end: int) -> None:
+    left_i = start
+    right_i = middle
+    aux_i = start  # write directly into correct region of aux
+
+    # merge into aux
     while left_i < middle and right_i < end:
-        left_elem = array[left_i]
-        right_elem = array[right_i]
-        # insert left
-        if left_elem < right_elem: aux.append(left_elem)
-        # insert right
-        else: aux.append(right_elem)
-        
-    # one of the lists is exhausted, now we append the remaining elements
-    for l in range(left_i, middle):
-        aux.append(array[l])
-    for r in range(right_i, end):
-        aux.append(array[r])
-    # copy elements from the aux array into the main array
-    for i in range(len(aux)):
-        array[start + i] = aux[i]
-    # explicit memory optimisation
-    del aux
+        if array[left_i] <= array[right_i]:
+            aux[aux_i] = array[left_i]
+            left_i += 1
+        else:
+            aux[aux_i] = array[right_i]
+            right_i += 1
+        aux_i += 1
+
+    # copy remaining left half
+    while left_i < middle:
+        aux[aux_i] = array[left_i]
+        left_i += 1
+        aux_i += 1
+
+    # copy remaining right half
+    while right_i < end:
+        aux[aux_i] = array[right_i]
+        right_i += 1
+        aux_i += 1
+
+    # copy back to original array
+    for i in range(start, end):
+        array[i] = aux[i]
 
 def heap_sort(array: list[T]) -> list[T]:
-    pass
+    n = len(array)
+
+    # Step 1: Build max heap (heapify)
+    for i in range(n // 2 - 1, -1, -1):
+        _sift_down(array, n, i)
+
+    # Step 2: Extract elements one by one
+    for end in range(n - 1, 0, -1):
+        # swap root (max) with last element
+        array[0], array[end] = array[end], array[0]
+        # restore heap property on reduced heap
+        _sift_down(array, end, 0)
+
+    return array
+
+
+def _sift_down(array: list[T], heap_size: int, root: int) -> None:
+    while True:
+        left = 2 * root + 1
+        right = 2 * root + 2
+        largest = root
+
+        if left < heap_size and array[left] > array[largest]:
+            largest = left
+        if right < heap_size and array[right] > array[largest]:
+            largest = right
+
+        if largest == root:
+            break
+
+        array[root], array[largest] = array[largest], array[root]
+        root = largest
 
 # O(n)
 
