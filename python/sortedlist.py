@@ -25,7 +25,7 @@ def binary_search_insert_index(
     else just assumes the items are dynamically comparable
     """
     low = 0
-    high = high if high != None else len(arr)
+    high = high if high != None else len(arr) - 1
     
     while low < high:
         mid = (low + high) // 2
