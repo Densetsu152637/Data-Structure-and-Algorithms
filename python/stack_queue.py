@@ -40,7 +40,7 @@ class Stack(Generic[T]):
             if not self.is_resizeable: raise RuntimeError(f"Cannot insert new item into Stack as stack is full")
     
     def _resize(self, new_cap: int):
-        if self.length < new_cap: raise ValueError(f"new cap of array of new size {new_cap} cannot be less than existing size of {self.length}")
+        if self.length > new_cap: raise ValueError(f"new cap of array of new size {new_cap} cannot be less than existing size of {self.length}")
         # create new array, copy elements over 
         # set start to 0 as we do a full iteration
         arr = [None] * new_cap 
@@ -104,7 +104,7 @@ class Queue(Generic[T]):
             if not self.is_resizeable: raise RuntimeError(f"Cannot insert new item into Stack as stack is full")
     
     def _resize(self, new_cap: int):
-        if self.length < new_cap: raise ValueError(f"new cap of array of new size {new_cap} cannot be less than existing size of {self.length}")
+        if self.length > new_cap: raise ValueError(f"new cap of array of new size {new_cap} cannot be less than existing size of {self.length}")
         # create new array, copy elements over 
         # set start to 0 as we do a full iteration
         arr = [None] * new_cap 
@@ -170,7 +170,7 @@ class Deque(Generic[T]):
             if not self.is_resizeable: raise RuntimeError(f"Cannot insert new item into Deque as deque is full")
     
     def _resize(self, new_cap: int):
-        if self.length < new_cap: raise ValueError(f"new cap of array of new size {new_cap} cannot be less than existing size of {self.length}")
+        if self.length > new_cap: raise ValueError(f"new cap of array of new size {new_cap} cannot be less than existing size of {self.length}")
         # create new array, copy elements over 
         # set start to 0 as we do a full iteration
         arr = [None] * new_cap 
